@@ -1,0 +1,65 @@
+[
+  {
+    "name": "neptune",
+    "fake_name": "neptune",
+    "screen_name": "Neptune",
+    "distance_from_earth_ly": 0.000046,
+    "description": "The farthest major planet in our solar system, a cold ice giant."
+  },
+  {
+    "name": "pluto",
+    "fake_name": "neptune",
+    "screen_name": "Pluto",
+    "distance_from_earth_ly": 0.000063,
+    "description": "A dwarf planet in the Kuiper Belt with an eccentric orbit."
+  },
+  {
+    "name": "proxima_centauri",
+    "fake_name": "neptune",
+    "screen_name": "Proxima Centauri",
+    "distance_from_earth_ly": 4.24,
+    "description": "The closest star to the Sun, a red dwarf hosting an exoplanet."
+  },
+  {
+    "name": "vega",
+    "fake_name": "neptune",
+    "screen_name": "Vega",
+    "distance_from_earth_ly": 25,
+    "description": "A bright white star in the constellation Lyra, part of the Summer Triangle."
+  },
+  {
+    "name": "betelgeuse",
+    "fake_name": "neptune",
+    "screen_name": "Betelgeuse",
+    "distance_from_earth_ly": 548,
+    "description": "A red supergiant nearing the end of its life, famous for its size and brightness."
+  },
+  {
+    "name": "gaia_bh1",
+    "fake_name": "neptune",
+    "screen_name": "Gaia BH1",
+    "distance_from_earth_ly": 1560,
+    "description": "The closest known black hole to Earth, discovered by Gaia."
+  },
+   {
+    "name": "edge_milky_way",
+    "fake_name": "neptune",
+    "screen_name": "Edge of the Milky Way",
+    "distance_from_earth_ly": 52000,
+    "description": "The approximate outer boundary of the Milky Way’s stellar disk."
+  },
+  {
+    "name": "andromeda",
+    "fake_name": "neptune",
+    "screen_name": "Andromeda Galaxy",
+    "distance_from_earth_ly": 2500000,
+    "description": "The nearest major galaxy to the Milky Way, on a slow collision course with us."
+  },
+  {
+    "name": "GW140915",
+    "fake_name": "neptune",
+    "screen_name": "GW140915",
+    "distance_from_earth_ly": 1300000000,
+    "description": "The first gravitational wave source ever detected: two merging black holes."
+  }
+]
