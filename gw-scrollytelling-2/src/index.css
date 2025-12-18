@@ -1,11 +1,29 @@
+
+@import url('https://fonts.googleapis.com/css2?family=BBH+Hegarty&display=swap');
+
+@font-face {
+  font-family: clashDisplay;
+  src: url(/ClashDisplay-Bold.ttf);
+}
+
+@font-face {
+  font-family: clashDisplaySemi;
+  src: url(/ClashDisplay-Semibold.woff);
+}
+
+@font-face {
+  font-family: dindong;
+  src: url(/DINdong.woff);
+}
+
 :root {
+  --background-color: #000000;
+  --text-color: #B7D1DC;
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
-  color: black;
-  background-color: #B7D1DC;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -17,11 +35,19 @@
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
+
+
 }
+
+.all-wrapper{
+    color: var(--text-color);
+  /* background-color: #B7D1DC; */
+  background-color: var(--background-color);
+}
+
+
 
 .htmlWrapper {
   background: transparent !important;
@@ -35,3 +61,29 @@ body {
 .htmlWrapper * {
   background: transparent !important;
 }
+
+.font-big{
+  font-family: clashDisplaySemi;
+  font-weight: 200;
+  font-style: normal;
+}
+
+.copy3 h1{
+  font-size: 3rem;
+}
+h1, p{
+ margin: 0;
+}
+p{
+  font-family: dinDong;
+}
+
+.copy{
+  background-color: transparent;
+}
+
+
+.ui-layer{
+  position: fixed;
+}
+

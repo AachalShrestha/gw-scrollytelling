@@ -40,7 +40,7 @@ const LoadModel = forwardRef(
           return meshes.map((mesh) => (
             <mesh key={mesh.uuid} geometry={mesh.geometry}>
               <meshToonMaterial map={mesh.material.map} />
-              <Outlines angle={0} thickness={2.5} color={outlineColor} />
+              <Outlines angle={0} thickness={3.5} color={outlineColor} />
             </mesh>
           ))
         })}

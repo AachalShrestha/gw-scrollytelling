@@ -14,7 +14,9 @@ import spaceDataJSON from "./assets/spaceData.json";
 import LoadModel from './LoadModel'
 import Rocket from './Rocket'
 import CustomStars from './Start'
-
+import SpaceComponents from './SpaceComponents'
+import useScrollAnimation from './hooks/useScrollAnimation'
+import Copy from './Copy'
 extend({ OutlineEffect })
 gsap.registerPlugin(ScrollTrigger)
 
@@ -31,22 +33,27 @@ export default function App() {
   const copy2 = useRef()
   const copy3 = useRef()
   const copy4 = useRef()
+  const copy5 = useRef()
   const html = useRef() 
   const earthRef = useRef()
   const rocketRef = useRef()
   const planetRef = useRef()
   const planetRefs = useRef([]);
-  const DISTANCE_SCALE = 50; 
+  const [reachedPlanet, setReachedPLanet] = useState();
+  const distanceCounterRef = useRef();
+  const [localDistanceTravelled, setLocalDistance] = useState(0);
   const [realDistanceTravelled, setRealDistance] = useState(0);
   const ANGLE_FACTOR = -0.5; 
   const followCamera = useRef(false)
-  const planetAmount = 10;
+  
   
   const distanceScale= 100;
   const [speed, setSpeed] = useState(0.2);
-  const NORMAL_SPEED = 0.1;
-  const BOOSTED_SPEED = 0.5;  
+  const NORMAL_SPEED = 0.05;
+  const BOOSTED_SPEED = 0.6;  
   const [spaceData, setSpaceData] = useState(spaceDataJSON)
+
+  const [isPressed, setIsPressed] = useState(false);
 
  const tl = gsap.timeline({
     scrollTrigger: {
@@ -56,66 +63,35 @@ export default function App() {
       scrub: 5,
     },
   });
-useEffect(() => {
-  const checkRef = setInterval(() => {
-    if (
-      !earthRef.current ||
-      !copy1.current ||
-      !copy2.current ||
-      !copy3.current
-    ) return;
-    
-    clearInterval(checkRef);
-
-/*     fetch(spaceData)
-      .then((res) => res.json())
-      .then((json) => setSpaceData(json));
-    
- */
-    // Initial states
-    gsap.set(copy1.current, { y: 50 });
-    gsap.set(copy2.current, { opacity: 0, y: -50 });
-    gsap.set(copy3.current, { opacity: 0, y: -50 });
-    gsap.set(copy4.current, { opacity: 0});
-    gsap.set(
-      planetRefs.current.map(p => p.position),
-      { y: 100 }
-    );
-    gsap.set(
-      planetRefs.current.map(p => p.children[0]),
-      { opacity: 0 }
-    );
-    gsap.set(rocketRef.current.position, { opacity: 1, y: -10, x: -1.5, z:-1 });
-
-    // Timeline
-    tl.to(earthRef.current.position, { z: 3, y: -1.5, duration: 1, ease: 'none' });
-    tl.to(earthRef.current.rotation, { y: THREE.MathUtils.degToRad(70), duration: 1, ease: 'none' });
-    tl.to(copy1.current, { opacity: 0, y: 10, duration: 2, ease: 'none' });
-    tl.to(copy2.current, { opacity: 1, y: -200, duration: 2, ease: 'none' });
-    tl.to(copy2.current, { opacity: 0, y: 10, duration: 2, ease: 'none' });
-    tl.to(copy3.current, { opacity: 1, y: -300, duration: 2, ease: 'none' });
-tl.to(earthRef.current.position, { x: -1.2, duration: 2, ease: 'none' })
-  tl.to(copy3.current, { opacity: 0, y: -50, duration: 2, ease: 'none' });
-  tl.to(copy4.current, { opacity: 1, duration: 2, ease: 'none' })
-  tl.to(html.current, { opacity: 0, duration: 1, ease: 'none' })
-  .to(
-    rocketRef.current.position,
-    { y: 0.4, duration: 2, ease: 'none',
-      onStart: () => (followCamera.current = false),
-      onReverseComplete: () => (followCamera.current = false),
-      onComplete: () => {(followCamera.current = true)}
-    },
-    "<"
-  )
-  
-  tl.to(
-  planetRefs.current.map((p) => p.position),
-  { y: 0, duration: 1, ease: "none", stagger: 0.3 }
-)
+  useScrollAnimation({
+    copyRefs: [copy1, copy2, copy3, copy4, copy5],
+    earthRef,
+    rocketRef,
+    planetRefs,
+    distanceCounterRef,
+    tl,
+    followCamera
   });
 
-  return () => clearInterval(checkRef);
-}, []);
+  
+useEffect(() => {
+  // This runs every time realDistanceTravelled changes
+  if (spaceData.some(e => 
+    e.distance_from_earth_ly > realDistanceTravelled - 0.2 &&
+    e.distance_from_earth_ly < realDistanceTravelled + 0.2
+  )) {
+    // find the matching element(s)
+    const matched = spaceData.find(e => 
+      e.distance_from_earth_ly > realDistanceTravelled - 0.2 &&
+      e.distance_from_earth_ly < realDistanceTravelled + 0.2
+    );
+    console.log("Reached:", matched.name);
+    /* setReachedPLanet(matched.name) */
+
+  } else {
+    console.log("nothing reached");
+  }
+}, [realDistanceTravelled]);
 
 
  
@@ -131,9 +107,26 @@ tl.to(earthRef.current.position, { x: -1.2, duration: 2, ease: 'none' })
           height: "100vh",
           zIndex: 1,
         }}
+        className='all-wrapper'
       >
+      
 
-        <DistanceCount distanceFromEarth={realDistanceTravelled} scale={distanceScale}/>
+{/*         <div className='copy'>
+            <div className="copy1 font-big" ref={copy1}>
+              <h1>FIRST DETECTED <br />GRAVITATIONAL <br />WAVE </h1> 
+            </div>
+            <div className="copy2" ref={copy2}>
+              In 2015 LIGO detected the first ever gravitational wave
+            </div>
+            <div className="copy3" ref={copy3}>
+              <p>The source of the first ever detected gravitational wave was a pair of merging black holes about </p>
+              <h1 className='copy3 font-big'>1.3 billion light-years</h1>
+              <p>away from Earth.</p>
+            </div>
+            <div className="copy4" ref={copy4}>
+              Let’s travel to the source of the first gravitational wave.
+            </div>
+        </div> */}
         <Canvas gl={{ preserveDrawingBuffer: true }} camera={{ position: [0, 0, 5], fov: 75 }}>
           
           <KeyboardControls map={keyboardMap}>
@@ -148,20 +141,28 @@ tl.to(earthRef.current.position, { x: -1.2, duration: 2, ease: 'none' })
             ref={html}
             style={{ pointerEvents: "none" }}
           >
-            <div className="copy1" ref={copy1}>
+            <div className="copy1 font-big" ref={copy1}>
               <h1>FIRST DETECTED <br />GRAVITATIONAL <br />WAVE </h1> 
             </div>
             <div className="copy2" ref={copy2}>
               In 2015 LIGO detected the first ever gravitational wave
             </div>
             <div className="copy3" ref={copy3}>
-              The source of the first ever detected gravitational wave was a pair of merging black holes about 
-              <h1>1.3 billion light-years</h1>
-              away from Earth.
+              <p>The source of the first ever detected gravitational wave was a pair of merging black holes about </p>
+              <h1 className='copy3 font-big'>1.3 billion light-years</h1>
+              <p>away from Earth.</p>
             </div>
             <div className="copy4" ref={copy4}>
-              Press Z and S to move the rocket forward and backward
+              <p>But how far is that really?</p>
             </div>
+            <div className="copy5" ref={copy5}>
+              <p>Let’s travel to the source of the first gravitational wave!</p>
+            </div>
+
+
+           {/*  <div className='reachedPlanetContainer'>
+              <h1>Reached {reachedPlanet}</h1>
+            </div> */}
           </Html>
 
           {/* <Box position={[0, 0, 0]} /> */}
@@ -170,34 +171,12 @@ tl.to(earthRef.current.position, { x: -1.2, duration: 2, ease: 'none' })
             <LoadModel position={[0, 0, 0]} scale={0.2} model="earth" color="#0E5173" />
         </group>
         
-{spaceData.map((item, i) => {
-   // adjust for scene
-  const distance = -Math.log10(item.distance_from_earth_ly + 1) * distanceScale;
-  const x = distance * ANGLE_FACTOR;
-  const z = distance;
-
-  return (
-    <group
-      key={item.name}
-      position={[x, 0, z]}
-      ref={(el) => (planetRefs.current[i] = el)}
-    >
-      <Html
-        position={[0, 2, 0]}
-        center
-        style={{ color: 'white', fontSize: '16px', pointerEvents: 'none' }}
-      >
-        {item.screen_name}
-      </Html>
-      <LoadModel
-        position={[0, 0, 0]}
-        scale={2}
-        model={item.fake_name}
-        color="#860f0fff"
-      />
-    </group>
-  );
-})}
+    <SpaceComponents
+    data={spaceData}
+    planetRefs={planetRefs}
+    distanceScale={distanceScale}
+    ANGLE_FACTOR={ANGLE_FACTOR}
+    />
               
       
    <group ref={rocketRef}>
@@ -205,21 +184,60 @@ tl.to(earthRef.current.position, { x: -1.2, duration: 2, ease: 'none' })
       followCamera={followCamera}
       anglefactor={ANGLE_FACTOR}
       setRealDistance={setRealDistance}
+      setLocalDistance={setLocalDistance}
       speed={speed}
+      distanceScale={distanceScale}
     />
-  </group>
-          <CustomStars count={2000} radius={100} />
+    </group>
+       <CustomStars count={800} radius={70} />
+       <CustomStars count={1000} radius={200} />
+       <CustomStars count={3000} radius={400}/>
+       <CustomStars count={4000} radius={1500}/>{/*    
           <axesHelper args={[5]} />
-          <gridHelper args={[10, 10]} />
+          <gridHelper args={[10, 10]} />s
           <GizmoHelper alignment="bottom-right" margin={[80, 80]}>
             <GizmoViewport />
-          </GizmoHelper>
+          </GizmoHelper> */}
           </KeyboardControls>
         </Canvas>
+
+         {/* FIXED UI OVERLAY */}
+  <div className="ui-layer">
+    <div className="speed-button">
+      <button
+        className={isPressed ? "pressed" : ""}
+        onMouseDown={() => { setSpeed(BOOSTED_SPEED); setIsPressed(true); }}
+        onMouseUp={() => { setSpeed(NORMAL_SPEED); setIsPressed(false); }}
         
+      >
+        SPEED UP
+      </button>
+    </div>
 
-      </div>
+    {/* <DistanceCount distanceFromEarth={realDistanceTravelled} />
+    <Copy distanceTraveled={realDistanceTravelled} /> */}
+  </div>
 
+        
+    {/* FIXED UI OVERLAY */}
+
+    </div>
+
+    <div className="ui-layer">
+     <div className="speed-button">
+      <button
+        className={isPressed ? "pressed" : ""}
+        onMouseDown={() => { setSpeed(BOOSTED_SPEED); setIsPressed(true); }}
+        onMouseUp={() => { setSpeed(NORMAL_SPEED); setIsPressed(false); }}
+        
+      >
+        SPEED UP
+      </button>
+    </div>
+
+      <DistanceCount distanceFromEarth={realDistanceTravelled} ref={distanceCounterRef}/>
+      <Copy distanceTraveled={localDistanceTravelled} />
+    </div>
       {/* SCROLL AREA */}
       <div
         id="scroll-container"
@@ -229,14 +247,7 @@ tl.to(earthRef.current.position, { x: -1.2, duration: 2, ease: 'none' })
           zIndex: 0,
         }}
       >
-        <div className="speed-button"><button
-  onClick={() => {setSpeed(BOOSTED_SPEED); console.log("Speed boosted");}}
-  onKeyUp={() => setSpeed(NORMAL_SPEED)}
-  onMouseDown={() => {setSpeed(BOOSTED_SPEED); console.log("Speed boosted onmousedown");}}
-  onMouseUp={() => setSpeed(NORMAL_SPEED)}
->
-  SPEED UP
-</button></div>
+  
       </div>
     </>
   )

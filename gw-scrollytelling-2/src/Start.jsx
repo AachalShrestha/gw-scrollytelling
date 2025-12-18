@@ -44,8 +44,8 @@ export default function CustomStars({ count = 1000, shape = "sphere", radius = 1
         />
       </bufferGeometry>
       <pointsMaterial
-        size={0.15}
-        color="#ac6aa6" 
+        size={0.25}
+        color="#B7D0DC" 
         sizeAttenuation
         depthWrite={false}
       />

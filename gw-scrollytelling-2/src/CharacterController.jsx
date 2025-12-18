@@ -3,14 +3,16 @@ import LoadModel from "./LoadModel"
 import { useFrame } from "@react-three/fiber"
 import * as THREE from "three"
 import { useKeyboardControls } from "@react-three/drei"
+import gsap from "gsap"
 
-export default function CharacterController({ followCamera, anglefactor, setRealDistance, speed }) {
+export default function CharacterController({ followCamera, anglefactor, setRealDistance,setLocalDistance, distanceScale,speed }) {
  /*  const { NORMAL_SPEED, BOOSTED_SPEED } = { NORMAL_SPEED: 0.3, BOOSTED_SPEED: 0.2 } */
   const character = useRef()
   const rocketRef = useRef()
   const group = useRef()
-const distanceTraveled = useRef(0);
+  const distanceTraveled = useRef(0);
   const initialCameraPos = useRef(new THREE.Vector3())
+  const initialCameraRotation = useRef()
   const offset = useRef(new THREE.Vector3()) // offset between camera and rocket
   useEffect(() => {
     const targetPosition = new THREE.Vector3()
@@ -25,7 +27,7 @@ const distanceTraveled = useRef(0);
     // Save initial camera position once
     
     if(group.current){
-     
+     setLocalDistance(-distanceTraveled.current);
 
       const movement = {
         z: 0,
@@ -36,11 +38,19 @@ const distanceTraveled = useRef(0);
         }
 
          if (get().backward) {
-            movement.z = 1;
+          console.log(distanceTraveled.current)
+          //Cannont go more backward than starting point
+          if(distanceTraveled.current >0){
+            return;
+          }else{
+              movement.z = 1;
+          }
+            
         }
     
     if (!initialCameraPos.current.length()) {
       initialCameraPos.current.copy(camera.position)
+      initialCameraRotation
     }
 
     if (!followCamera.current) {
@@ -63,7 +73,8 @@ const distanceTraveled = useRef(0);
 
   if (followCamera.current) {
 
-    camera.position.y = rocketRef.current.position.y - 0.5;
+    gsap.to(camera.current, {y: - 0.5, duration:1})
+    /* camera.position.y = rocketRef.current.position.y - 0.5; */
 
     // ACCUMULATE distance
     distanceTraveled.current += movement.z * speed;
@@ -74,8 +85,10 @@ const distanceTraveled = useRef(0);
     rocketRef.current.position.x = newDistance * anglefactor;
 
     // Convert back from log to real distance
-    const real = Math.pow(10, newDistance / -100) - 1;
+
+    const real = Math.pow(10, -newDistance / distanceScale) - 1;
     setRealDistance(real);
+
   }
     
 }
