@@ -1,55 +1,96 @@
-import * as THREE from 'three'
-import { useGLTF, useTexture, Edges, Outlines } from '@react-three/drei'
-import { useFrame, useThree } from '@react-three/fiber'
-import { forwardRef, useEffect, useRef, useState } from 'react'
-import { OutlineEffect } from "three/addons/effects/OutlineEffect.js"
-import gsap from 'gsap'
+import { forwardRef, useEffect, useRef } from "react";
+import { useGLTF, useAnimations,  } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
+import * as THREE from "three";
+import { Outlines } from "@react-three/drei";
 
 const LoadModel = forwardRef(
-  ({ model, color = "#0E5173", scale = 1, position = [0,0,0], rotation }, ref) => {
-    const { scene } = useGLTF(`/${model}.glb`)
-    const gradient = useTexture('/gradient.jpg')
-    const outlineColor = new THREE.Color(color)
+  (
+    {
+      model,
+      color,
+      scale = 1,
+      position = [0, 0, 0],
+      rotation,
+      emissiveIntensity,
+      emissiveColor,
+      animated = false,
+    },
+    ref
+  ) => {
+    const group = useRef();
+    const { scene, animations } = useGLTF(`/${model}.glb`);
+    const { actions, names } = useAnimations(animations, group);
+    console.log(actions, names, animations);
+    // ▶️ PLAY ANIMATION
 
-    // Set initial rotation if provided
     useEffect(() => {
-      if (!ref?.current) return
-      if (rotation) {
-        ref.current.rotation.set(
-          THREE.MathUtils.degToRad(rotation[0] || 0),
-          THREE.MathUtils.degToRad(rotation[1] || 0),
-          THREE.MathUtils.degToRad(rotation[2] || 0)
-        )
-      }
-    }, [rotation, ref])
+      if (!animated || !actions || !names.length) return;
 
-    // Floating animation
+      const action = actions[names[0]];
+      if (!action) return;
+
+      action.reset().play();
+
+      return () => action.stop();
+    }, [animated, actions, names]);
+
+    // ▶️ ROTATION
+    useEffect(() => {
+      if (!ref?.current || !rotation) return;
+
+      ref.current.rotation.set(
+        THREE.MathUtils.degToRad(rotation[0] || 0),
+        THREE.MathUtils.degToRad(rotation[1] || 0),
+        THREE.MathUtils.degToRad(rotation[2] || 0)
+      );
+    }, [rotation]);
+
+    // ▶️ FLOAT
     useFrame(() => {
-      if (!ref?.current) return
-      const t = performance.now() * 0.001
-      ref.current.position.y = Math.cos(t) * 0.02
-    })
+      if (!ref?.current) return;
+      ref.current.position.y = Math.cos(performance.now() * 0.001) * 0.04;
+    });
 
     return (
       <group ref={ref} scale={scale} position={position}>
         {scene.children.map((child) => {
-          const meshes = []
-          child.traverse((c) => {
-            if (c.isMesh) meshes.push(c)
-          })
-          return meshes.map((mesh) => (
-            <mesh key={mesh.uuid} geometry={mesh.geometry}>
-              <meshToonMaterial map={mesh.material.map} />
-              <Outlines angle={0} thickness={3.5} color={outlineColor} />
+          const meshes = [];
+          child.traverse((c) => c.isMesh && meshes.push(c));
+
+          return meshes.map((mesh) => {
+            const material = mesh.material.clone();
+
+            material.emissive = emissiveColor
+              ? new THREE.Color(emissiveColor)
+              : new THREE.Color(0xffffff);
+
+            material.emissiveIntensity =
+              model === "earth" ? 0.1 : emissiveIntensity ?? 0.16;
+
+            material.side = THREE.DoubleSide;
+            material.needsUpdate = true;
+
+            return (
+              <mesh
+              key={mesh.uuid}
+              geometry={mesh.geometry}
+              material={material}
+            >
+              {color && (
+                <Outlines thickness={3} color={0xffffff} angle={0} />
+              )}
             </mesh>
-          ))
+            );
+          });
         })}
       </group>
-    )
+    );
   }
-)
+);
 
-export default LoadModel
+export default LoadModel;
+
 
 /* const LoadingModel = forwardRef((props, ref) => {
   const { model, color } = props

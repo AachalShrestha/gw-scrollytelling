@@ -1,6 +1,6 @@
 
 @import url('https://fonts.googleapis.com/css2?family=BBH+Hegarty&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Jersey+10&display=swap');
 @font-face {
   font-family: clashDisplay;
   src: url(/ClashDisplay-Bold.ttf);
@@ -64,8 +64,9 @@ body {
 
 .font-big{
   font-family: clashDisplaySemi;
-  font-weight: 200;
+  font-weight: 100;
   font-style: normal;
+  font-size: 3em;
 }
 
 .copy3 h1{
@@ -87,3 +88,59 @@ p{
   position: fixed;
 }
 
+.distance-count{
+  font-family: "Jersey 10", sans-serif;
+   font-variant-numeric: tabular-nums;
+}
+
+
+/**********SPEED BUTTON **********/
+.speed-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  padding: 5px 10px;
+  font-family: dinDong;
+}
+
+.speed-button button{
+  padding: 8px 40px 5px 40px;
+  font-family: dinDong;
+  border-radius: 5px;
+  background-color: transparent;
+  border: 1.5px solid white;
+}
+.pressed{
+  background-color: white !important;
+  color: black !important;
+}
+
+
+.start-copy-container{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 1000;
+}
+
+.font-big{
+  font-family: clashDisplaySemi;
+  margin: 0;
+  line-height: 1.2;
+  font-size: 5rem;
+  color: white;
+}
+
+.font-medium{
+  font-family: clashDisplaySemi;
+  font-weight: 100;
+  font-style: normal;
+  font-size: 3rem;
+}
+
+.start-copy-container p{
+  font-size: 14pt;
+}

@@ -1,0 +1,22 @@
+.arrowButtons-container{
+    position: fixed;
+    bottom: 70px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+}
+
+.arrowButtons-bottomRow{
+    display: flex;
+    gap: 3px;
+}
+
+.arrow{
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 2px solid white;
+    color: white;
+}

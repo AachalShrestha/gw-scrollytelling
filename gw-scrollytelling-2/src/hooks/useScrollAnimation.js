@@ -11,18 +11,21 @@ export default function useScrollAnimation({
   earthRef,
   rocketRef,
   planetRefs,
+  arrowButtonsRef,
   distanceCounterRef,
-  followCamera
+  followCamera,
+  setStartAnimDoneState
 }) {
   const planetMaterials = useRef([]);
 
   useEffect(() => {
-    const tl = gsap.timeline({
+        const tl = gsap.timeline({
       scrollTrigger: {
-        trigger: '#scroll-container',
-        start: 'top top',
-        end: '+=6000', // ⬅️ IMPORTANT
-        scrub: 5,
+        trigger: "#scroll-container",
+        start: "top top",
+        end: "+=8000", // ⬅️ THIS is what fills the whole scroll
+        scrub: true,
+        invalidateOnRefresh: true,
       },
     });
 
@@ -53,6 +56,7 @@ export default function useScrollAnimation({
       // Initial states
       // -------------------------
       gsap.set(distanceCounterRef.current, { opacity: 0, y: -1 });
+      gsap.set(arrowButtonsRef.current, { opacity: 0 });
       gsap.set(earthRef.current.position, { y: 0, z: 1 });
       gsap.set(copyRefs[0].current, { y: 140 });
       gsap.set(copyRefs[1].current, { opacity: 0, y: -50 });
@@ -74,14 +78,14 @@ export default function useScrollAnimation({
       // -------------------------
       // Timeline
       // -------------------------
-      tl.to(earthRef.current.position, { z: 3, y: -1.5, end: '+=4000'  })
-        .to(copyRefs[0].current, { opacity: 0, y: 10 })
+      tl.to(earthRef.current.position, { z: 2, y: -1.8, end: '+=4000'  })
+        .to(copyRefs[0].current, { opacity: 0, y: 10, duration: 0.5 })
         .to(copyRefs[1].current, { opacity: 1, y: -150 })
         .to(earthRef.current.rotation, {
-          y: THREE.MathUtils.degToRad(70),
+          y: THREE.MathUtils.degToRad(90),
         })
         .to(copyRefs[1].current, { opacity: 0, y: 10 })
-        .to(copyRefs[2].current, { opacity: 1, y: -150 })
+        .to(copyRefs[2].current, { opacity: 1, y: -260 })
         .to(earthRef.current.position, { x: -1.2 })
         .to(copyRefs[2].current, { opacity: 0 })
         .to(copyRefs[3].current, { opacity: 1 })
@@ -89,7 +93,7 @@ export default function useScrollAnimation({
         .to(
           rocketRef.current.position,
           {
-            y: 0.4,
+            y: 0.6,
             onStart: () => (followCamera.current = false),
             onReverseComplete: () => (followCamera.current = false),
             onComplete: () => (followCamera.current = true),
@@ -98,19 +102,28 @@ export default function useScrollAnimation({
         )
 
         .to(distanceCounterRef.current, { opacity: 1, y: 0 })
-
-        .to(
-          planetRefs.current.map(p => p.position),
-          { y: 0, stagger: 0.3 }
-        )
-
-        .to(copyRefs[3].current, { opacity: 0, end: '+=4000'  })
-        .to(copyRefs[4].current, { opacity: 1, })
-
+        .to(arrowButtonsRef.current, { opacity: 1 })
         .to(planetMaterials.current, {
           opacity: 1,
           stagger: 0.2
-        });
+        })
+        .to(
+          planetRefs.current.map(p => p.position),
+          { y: 0, stagger: 0.3 }, "<"
+        )
+
+        .to(copyRefs[3].current, { opacity: 0, },"<")
+        .to(
+            copyRefs[4].current,
+            {
+              opacity: 1,
+              onComplete: () => {
+                setStartAnimDoneState   (true);
+              }
+            },
+            "<"
+          );
+        
     }, 50);
 
     return () => {

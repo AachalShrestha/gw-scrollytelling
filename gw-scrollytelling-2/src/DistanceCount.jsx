@@ -2,7 +2,7 @@ import React from "react";
 
 import { forwardRef } from "react";
 const DistanceCount = forwardRef(({ distanceFromEarth }, ref) => {
-  const distance = Math.round(distanceFromEarth);
+  const distance = Math.round(distanceFromEarth).toLocaleString("fr-FR");
 
   return (
     <div className="distance-count" ref={ref}>
